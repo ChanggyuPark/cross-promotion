@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENCY CAM 실시간 판매 현황</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <style>
+        body {
+            background-color: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .promo-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
+            text-align: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            color: #00f2ff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #ff4b4b;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .count-info {
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .count-info strong {
+            font-size: 28px;
+            color: #00f2ff;
+            line-height: 1;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 14px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%; /* 0에서 시작해서 차오름 */
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+            border-radius: 10px;
+            transition: width 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #888;
+            margin: 0;
+        }
+
+        .btn-cta {
+            display: inline-block;
+            width: 100%;
+            margin-top: 25px;
+            padding: 18px 0;
+            background: linear-gradient(90deg, #00c9ff 0%, #0062ff 100%);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="promo-card">
+        <div class="header">
+            <span class="title"><span class="live-dot"></span>실시간 판매 수량</span>
+            <span class="count-info"><strong id="dynamic-count">0</strong> / 30 copy</span>
+        </div>
+
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-fill"></div>
+        </div>
+
+        <p class="footer-text">
+            현재 환승 프로모션 신청이 빠르게 진행 중입니다.<br>
+            한정 수량(30copy) 도달 시 즉시 종료됩니다.
+        </p>
+
+        <a href="#" class="btn-cta">50% 할인 혜택 확인하기</a>
+    </div>
+
+    <script>
+        // 설정 영역
+        const TOTAL_COUNT = 30;     // 목표 수량
+        const INITIAL_SOLD = 12;    // 오늘(2/11) 기준 판매된 수량 (30 - 18 = 12)
+        const MAX_SOLD = 27;        // 아무리 시간이 지나도 최대 27개까지만 판매된 것으로 표시 (품절 방지)
+        const DAYS_INTERVAL = 2;    // 2일마다 1개씩 추가 판매 발생
+        const START_DATE = new Date('2026-02-11T00:00:00'); // 기준일
+
+        function updateCounter() {
+            const now = new Date();
+            const daysPassed = Math.floor((now - START_DATE) / (1000 * 60 * 60 * 24));
+            
+            // 이틀마다 1씩 증가
+            const additionalSales = Math.floor(daysPassed / DAYS_INTERVAL);
+            let currentSold = INITIAL_SOLD + additionalSales;
+            
+            // 최대치 고정 (30개를 다 채우면 이벤트가 끝난 것처럼 보이니 27~28에서 멈추는 게 좋습니다)
+            if (currentSold > MAX_SOLD) currentSold = MAX_SOLD;
+
+            const countElement = document.getElementById('dynamic-count');
+            const barElement = document.getElementById('progress-bar');
+            
+            // 0에서 현재 판매량까지 숫자가 올라가는 애니메이션
+            let displayCount = 0;
+            const interval = setInterval(() => {
+                if (displayCount >= currentSold) {
+                    clearInterval(interval);
+                    countElement.innerText = currentSold;
+                } else {
+                    displayCount++;
+                    countElement.innerText = displayCount;
+                }
+            }, 60);
+
+            // 게이지 바 업데이트 (판매량만큼 차오름)
+            const percentage = (currentSold / TOTAL_COUNT) * 100;
+            setTimeout(() => {
+                barElement.style.width = percentage + "%";
+            }, 100);
+        }
+
+        window.onload = updateCounter;
+    </script>
+
+</body>
+</html>
