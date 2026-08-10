@@ -115,36 +115,36 @@
 
         <p class="footer-text">
             현재 환승 프로모션 신청이 빠르게 진행 중입니다.<br>
-            한정 수량(30copy) 도달 시 할인율이 조정됩니다.
+            한정 수량(30copy) 도달 시 즉시 종료됩니다.
         </p>
 
-        <a href="https://forms.monday.com/forms/58b38964d80641721d82dbc3635b1560?r=use1" target="_blank" class="btn-cta">50% 할인 혜택 확인하기</a>
+        <a href="#" class="btn-cta">50% 할인 혜택 확인하기</a>
     </div>
 
     <script>
         // 설정 영역
         const TOTAL_COUNT = 30;     // 목표 수량
-        const INITIAL_SOLD = 12;    // 오늘(2/11) 기준 판매된 수량 (30 - 18 = 12)
+        const INITIAL_SOLD = 3;     // 오늘(8/13) 기준 판매된 수량
         const MAX_SOLD = 27;        // 아무리 시간이 지나도 최대 27개까지만 판매된 것으로 표시 (품절 방지)
         const DAYS_INTERVAL = 2;    // 2일마다 1개씩 추가 판매 발생
-        const START_DATE = new Date('2026-02-11T00:00:00'); // 기준일
+        const START_DATE = new Date('2026-08-13T00:00:00'); // 기준일 (1차 eDM 발송일)
 
         function updateCounter() {
             const now = new Date();
             const daysPassed = Math.floor((now - START_DATE) / (1000 * 60 * 60 * 24));
             
-            // 이틀마다 1씩 증가
+            // 이틀마다 1up
             const additionalSales = Math.floor(daysPassed / DAYS_INTERVAL);
             let currentSold = INITIAL_SOLD + additionalSales;
             
-            // 최대치 고정 (30개를 다 채우면 이벤트가 끝난 것처럼 보이니 27~28에서 멈추는 게 좋습니다)
+            // 최대치 고정
             if (currentSold > MAX_SOLD) currentSold = MAX_SOLD;
 
             const countElement = document.getElementById('dynamic-count');
             const barElement = document.getElementById('progress-bar');
             
-            // 0에서 현재 판매량까지 숫자가 올라가는 애니메이션
-            let displayCount = 0;
+            // INITIAL_SOLD에서 현재 판매량까지 숫자가 올라가는 애니메이션
+            let displayCount = INITIAL_SOLD;
             const interval = setInterval(() => {
                 if (displayCount >= currentSold) {
                     clearInterval(interval);
@@ -166,6 +166,4 @@
     </script>
 
 </body>
-
 </html>
-
